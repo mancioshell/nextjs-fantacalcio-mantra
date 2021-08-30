@@ -8,8 +8,21 @@
     "start": "next start"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4",
+    "bootstrap": "4.6.0",
+    "fast-csv": "^4.3.6",
+    "mongodb": "^4.1.1",
+    "multer": "^1.4.3",
+    "nedb-promises": "^5.0.0",
     "next": "^11.0.0",
+    "next-auth": "^3.29.0",
+    "next-connect": "^0.10.2",
+    "node-xlsx": "^0.17.1",
+    "nodemailer": "^6.6.3",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-bootstrap": "^1.6.1",
+    "react-dom": "17.0.2",
+    "react-select": "^4.3.1",
+    "swr": "^1.0.0"
   }
 }
