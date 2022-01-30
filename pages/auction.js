@@ -12,13 +12,14 @@ import AccessDenied from "../components/Login";
 
 import { AuctionForm } from "../components/AuctionForm";
 import { RemovePlayerForm } from "../components/RemovePlayerForm";
-import { UploadPlayersForm } from "../components/UploadPlayersForm";
+import { UpdatePlayers } from "../components/UpdatePlayers";
 import { SettingsForm } from "../components/SettingsForm";
+import { UpdateTeamForm } from "../components/UpdateTeamForm";
 
 import { UIProvider } from "../components/UIProvider";
 
 export default function Auction() {
-  const [ session, loading ] = useSession()
+  const [session, loading] = useSession();
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -32,6 +33,7 @@ export default function Auction() {
     maxAmount: 0,
     minPlayersAmount: 0,
     maxPlayersAmount: 0,
+    redeemType: 1,
   };
 
   if (!session) {
@@ -114,22 +116,35 @@ export default function Auction() {
                 <SettingsForm
                   currentSettings={settings?.data || defaultSettings}
                 ></SettingsForm>
-
-                <hr className="mt-2"></hr>
               </section>
 
-              <section id="auction-form" className="mt-5">
+              <section id="team-player-list-form" className="mt-5">
                 <h3>
-                  <i className="fas fa-upload"></i> Carica Lista Calciatori
+                  <i className="fas fa-futbol"></i> Aggiorna Squadre
                 </h3>
 
                 <hr className="mt-2"></hr>
 
-                <UploadPlayersForm
-                  onUploadPlayers={() => {
+                <UpdateTeamForm
+                  teams={teams}
+                  onUpdateTeam={() => {
+                    mutate("/api/teams");
+                  }}
+                ></UpdateTeamForm>
+              </section>
+
+              <section id="player-list-form" className="mt-5">
+                <h3>
+                  <i className="fas fa-upload"></i> Aggiorna Lista Calciatori
+                </h3>
+
+                <hr className="mt-2"></hr>
+
+                <UpdatePlayers
+                  onUpdatedPlayers={() => {
                     mutate("/api/players");
                   }}
-                ></UploadPlayersForm>
+                ></UpdatePlayers>
               </section>
             </Col>
           </Row>
