@@ -3,16 +3,15 @@ import { useState, useEffect } from "react";
 import { useContext } from "react";
 import UIContext from "../context/UIContext";
 
-import { Team } from "../components/Team";
-
-import { Form, Col, Row } from "react-bootstrap";
+import { Form, Col, Row, Button, Spinner } from "react-bootstrap";
 
 import Select from "react-select";
 
-function RemovePlayerForm({ teams, settings, onRemovePlayer }) {
+function UpdateTeamForm({ teams, onUpdateTeam }) {
   const ui = useContext(UIContext);
 
   const [team, setTeam] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (team) {
@@ -26,9 +25,9 @@ function RemovePlayerForm({ teams, settings, onRemovePlayer }) {
     label: item.name,
   }));
 
-  const removePlayerFromTeam = async (teamId, playerId) => {
-    const response = await fetch(`/api/teams/${teamId}/players/${playerId}?action=remove`, {
-      method: "DELETE",
+  const updateTeamById = async (teamId) => {
+    const response = await fetch(`/api/teams/${teamId}/players`, {
+      method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -36,34 +35,16 @@ function RemovePlayerForm({ teams, settings, onRemovePlayer }) {
     });
   };
 
-  const redeemPlayerFromTeam = async (teamId, playerId) => {
-    const response = await fetch(`/api/teams/${teamId}/players/${playerId}?action=redeem`, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-  };
-
-  const onRemove = async (teamId, playerId) => {
-    await removePlayerFromTeam(teamId, playerId);
+  const onUpdate = async () => {
+    setIsLoading(true);
+    await updateTeamById(team._id);
+    setIsLoading(false);
     ui.addMessage({
       type: "success",
-      text: "Calciatore Rimosso",
+      text: "Squadra Aggiornata",
       title: "Asta",
     });
-    onRemovePlayer();
-  };
-
-  const onRedeem = async (teamId, playerId) => {
-    await redeemPlayerFromTeam(teamId, playerId);
-    ui.addMessage({
-      type: "success",
-      text: "Calciatore Svincolato",
-      title: "Asta",
-    });
-    onRemovePlayer();
+    onUpdateTeam();
   };
 
   return (
@@ -94,16 +75,37 @@ function RemovePlayerForm({ teams, settings, onRemovePlayer }) {
             />
           </Form.Group>
         </Col>
-        <Col sm="8">
-          {team ? (
-            <Team team={team} settings={settings} edit={true} onRemove={onRemove} onRedeem={onRedeem}></Team>
-          ) : null}
+        <Col sm="2" className="align-self-center">
+          {!isLoading ? (
+            team ? (
+              <Button
+                className="mr-3 mt-3"
+                variant="primary"
+                type="button"
+                onClick={onUpdate}
+              >
+                <i className="fas fa-arrow-circle-up"></i> Aggiorna
+              </Button>
+            ) : null
+          ) : (
+            <Button className="mr-3 mt-3" variant="primary" disabled>
+              <Spinner
+                className="mr-2"
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+              Aggiornamento...
+            </Button>
+          )}
         </Col>
       </Row>
     </Form>
   );
 }
 
-export { RemovePlayerForm };
+export { UpdateTeamForm };
 
-export default RemovePlayerForm;
+export default UpdateTeamForm;

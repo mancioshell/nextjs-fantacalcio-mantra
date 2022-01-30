@@ -28,7 +28,7 @@ handler
     let teams = await data.api.getTeams();
     let settings = await data.api.getSettings();
 
-    let fileContents = await xls.api.getXlsBuffer(teams, settings);    
+    let fileContents = await xls.api.getXlsBuffer(teams, settings);
 
     for (let team of teams) {
       await sendEmail(team, fileContents, true);
@@ -63,6 +63,11 @@ handler
   .get("/api/teams", async (req, res) => {
     let teams = await data.api.getTeams();
     res.status(200).json(teams);
+  })
+  .put("/api/teams/:teamId/players", async (req, res) => {
+    let teamId = req.params.teamId;
+    await data.api.updateTeamById(teamId);
+    res.json({});
   })
   .get("/api/teams/players", async (req, res) => {
     let type = req.query.type;
@@ -106,9 +111,13 @@ handler
     res.json(team);
   })
   .delete("/api/teams/:teamId/players/:playerId", async (req, res) => {
+    let action = req.query.action;
+
     let teamId = req.params.teamId;
     let playerId = parseInt(req.params.playerId);
-    await data.api.removePlayerFromTeam(teamId, playerId);
+
+    await data.api.removePlayerFromTeam(teamId, playerId, action);
+
     res.json({});
   })
   .get("/api/teams/:teamId/players", async (req, res) => {

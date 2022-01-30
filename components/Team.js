@@ -5,7 +5,7 @@ import UIContext from "../context/UIContext";
 
 import Roles from "./Roles";
 
-function Team({ team, settings, onRemove }) {
+function Team({ team, settings, edit, onRemove, onRedeem }) {
   const ui = useContext(UIContext);
 
   const sendEmailToPresident = async () => {
@@ -35,7 +35,7 @@ function Team({ team, settings, onRemove }) {
         <td>{player.name}</td>
         <td>{player.team}</td>
         <td>{player.price}</td>
-        {onRemove ? (
+        {edit ? (
           <td>
             <Button
               size="sm"
@@ -45,6 +45,15 @@ function Team({ team, settings, onRemove }) {
             >
               <i className="fas fa-trash"></i> Rimuovi
             </Button>
+            <Button
+              className="ml-2"
+              size="sm"
+              variant="dark"
+              type="button"
+              onClick={() => onRedeem(team._id, player.id)}
+            >
+              <i className="fas fa-trash"></i> Svincola
+            </Button>
           </td>
         ) : null}
       </tr>
@@ -52,7 +61,7 @@ function Team({ team, settings, onRemove }) {
   });
 
   const amount = team.players.reduce((curr, next) => curr + next.price, 0);
-  let fund = maxAmount - amount;
+  let fund = maxAmount - amount - team.redeemAmount;
   let maxOffer =
     team.players.length < minPlayersAmount
       ? fund - minPlayersAmount + team.players.length + 1
@@ -132,11 +141,14 @@ function Team({ team, settings, onRemove }) {
             <Col>
               <b>Budget Iniziale :</b> {maxAmount}
             </Col>
-            
+            <Col>
+              <div className="float-right">
+                <b>Ritenute Svincolo :</b> {team.redeemAmount}
+              </div>
+            </Col>
           </Row>
 
-          <Row className="mt-2">           
-
+          <Row className="mt-2">
             <Col>
               <div>
                 <b>Crediti Spesi :</b> {maxAmount - fund}
