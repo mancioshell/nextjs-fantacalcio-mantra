@@ -5,7 +5,7 @@ import UIContext from "../context/UIContext";
 
 import { Form, Button, Col, Row } from "react-bootstrap";
 
-import Roles from "./Roles";
+import Roles, { roles } from "./Roles";
 
 import Select from "react-select";
 
@@ -34,6 +34,11 @@ function AuctionForm({ players, teams, onAuction }) {
     label: item.name,
   }));
 
+  const roleOptions = roles.map((item, index) => ({
+    value: item,
+    label: item,
+  }));
+
   const initState = {
     price: 0,
     playerId: null,
@@ -41,6 +46,7 @@ function AuctionForm({ players, teams, onAuction }) {
   };
 
   const [auction, setAuction] = useState({ ...initState });
+  const [rolesFilter, setRolesFilter] = useState([]);
 
   const addPlayerToTeam = async () => {
     if (auction.teamId && auction.playerId && auction.price > 0) {
@@ -92,7 +98,30 @@ function AuctionForm({ players, teams, onAuction }) {
   return (
     <Form onSubmit={onSubmit}>
       <Row className="min-container">
-        <Col sm="3">
+        <Col sm="5">
+          <Form.Group controlId={"select-player"}>
+            <Form.Label>
+              <b>Filtra per Ruoli</b> :
+            </Form.Label>
+
+            <Select
+              inputId={`filter-roles`}
+              options={roleOptions}
+              isMulti={true}
+              isSearchable={true}
+              name={"filter-roles"}
+              formatOptionLabel={function (data) {
+                return <Roles roles={[data.value]}></Roles>;
+              }}
+              onChange={(options) => {
+                setRolesFilter(options);
+              }}
+              placeholder={"Filtra per Ruolo"}
+            />
+          </Form.Group>
+        </Col>
+
+        <Col sm="4">
           <Form.Group controlId={"select-player"}>
             <Form.Label>
               <b>Seleziona Calciatore *</b> :
@@ -100,7 +129,16 @@ function AuctionForm({ players, teams, onAuction }) {
 
             <Select
               inputId={`select-player`}
-              options={playerOptions}
+              options={playerOptions?.filter((player) => {
+                if (rolesFilter.length <= 0) return true;
+
+                let filtered = rolesFilter.filter((role) => {
+                  let result = player.roles.find((elem) => elem === role.value);
+                  return result;
+                });
+
+                return filtered.length > 0;
+              })}
               isSearchable={true}
               name={"select-player"}
               formatOptionLabel={function (data) {
@@ -124,7 +162,8 @@ function AuctionForm({ players, teams, onAuction }) {
             />
           </Form.Group>
         </Col>
-
+      </Row>
+      <Row className="min-container">
         <Col sm="3">
           <Form.Group controlId={"select-team"}>
             <Form.Label>
