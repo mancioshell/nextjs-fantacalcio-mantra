@@ -14,7 +14,7 @@ export default function AccessDenied() {
 
           <section>
             <p>
-              Devi essere loggato tramite Github per poter utilizzare le
+              Devi essere loggato tramite Github o Google per poter utilizzare le
               funzionalità di amministrazione.
             </p>
 
