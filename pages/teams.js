@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 import { Container, Row, Col, Button } from "react-bootstrap";
 
@@ -17,6 +17,9 @@ export default function Teams() {
   const ui = useContext(UIContext);
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
+
+  const { mutate } = useSWRConfig();
+
   const teams = useSWR(`/api/teams`, fetcher, { refreshInterval: 1000 });
   const settings = useSWR(`/api/settings`, fetcher);
 
@@ -37,6 +40,29 @@ export default function Teams() {
     });
   };
 
+  const redeemPlayerFromTeam = async (teamId, playerId) => {
+    const response = await fetch(
+      `/api/teams/${teamId}/players/${playerId}?action=redeem`,
+      {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  };
+
+  const onRedeem = async (teamId, playerId) => {
+    await redeemPlayerFromTeam(teamId, playerId);
+    ui.addMessage({
+      type: "success",
+      text: "Calciatore Svincolato",
+      title: "Asta",
+    });
+    mutate("/api/teams");
+  };
+
   let Teams = teams.data?.map((item, index) => (
     <Col className="mt-3 mb-5" md="4" sm="3" key={item._id}>
       <Team
@@ -48,6 +74,7 @@ export default function Teams() {
             maxPlayersAmount: 0,
           }
         }
+        onRedeem={onRedeem}
       ></Team>
     </Col>
   ));

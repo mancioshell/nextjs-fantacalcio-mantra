@@ -1,11 +1,16 @@
 import { Table, Button, Col, Row, Alert } from "react-bootstrap";
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import UIContext from "../context/UIContext";
 
+import ConfirmAction from "./ConfirmAction";
 import Roles from "./Roles";
 
 function Team({ team, settings, edit, onRemove, onRedeem }) {
+  const [show, setShow] = useState(false);
+  const [message, setMessage] = useState("");
+  const [redeem, setRedeem] = useState({});
+
   const ui = useContext(UIContext);
 
   const sendEmailToPresident = async () => {
@@ -50,12 +55,36 @@ function Team({ team, settings, edit, onRemove, onRedeem }) {
               size="sm"
               variant="dark"
               type="button"
-              onClick={() => onRedeem(team._id, player.id)}
+              onClick={() => {
+                setRedeem({ teamId: team._id, playerId: player.id });
+                setMessage(
+                  `Confermi di voler svincolare ${player.name} pagato ${player.price} ?`
+                );
+                setShow(true);
+              }}
             >
-              <i className="fas fa-trash"></i> Svincola
+              <i className="fas fa-hand-holding-usd"></i> Svincola
             </Button>
           </td>
-        ) : null}
+        ) : (
+          <td>
+            <Button
+              className="btn-redeem"
+              size="sm"
+              type="button"
+              title="Svincola Giocatore"
+              onClick={() => {
+                setRedeem({ teamId: team._id, playerId: player.id });
+                setMessage(
+                  `Confermi di voler svincolare ${player.name} pagato ${player.price} ?`
+                );
+                setShow(true);
+              }}
+            >
+              <i className="fas fa-hand-holding-usd"></i>
+            </Button>
+          </td>
+        )}
       </tr>
     );
   });
@@ -123,7 +152,7 @@ function Team({ team, settings, edit, onRemove, onRedeem }) {
                 <th>Giocatore</th>
                 <th>Squadra</th>
                 <th>Prezzo</th>
-                {onRemove ? <th>Azioni</th> : null}
+                <th>Azioni</th>
               </tr>
             </thead>
             <tbody>{players}</tbody>
@@ -133,6 +162,20 @@ function Team({ team, settings, edit, onRemove, onRedeem }) {
             Nessun giocatore in Rosa
           </Alert>
         )}
+
+        <ConfirmAction
+          show={show}
+          title="Conferma Svincolo"
+          message={message}
+          onClose={() => {
+            setShow(false);
+            setMessage("");
+          }}
+          onConfirm={() => {
+            setShow(false);
+            onRedeem(redeem.teamId, redeem.playerId);
+          }}
+        ></ConfirmAction>
       </section>
 
       {!onRemove ? (
