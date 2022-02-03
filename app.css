@@ -12,3 +12,15 @@
   color: #fff;
   background-color: #198754;
 }
+
+.btn-redeem {
+  color: #000;
+  background-color: #f8f9fa;
+  border-color: #f8f9fa;
+}
+
+.btn-redeem:hover {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
