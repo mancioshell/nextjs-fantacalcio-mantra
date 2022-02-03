@@ -13,6 +13,8 @@ const getColor = {
   Pc: "danger",
 };
 
+const roles = ['Por', 'Ds', 'Dd', 'Dc', 'E', 'M', 'C', 'W', 'T', 'A', 'Pc']
+
 function Roles({ roles }) {
   let badgeList = roles.map((role, index) => (
     <span
@@ -25,6 +27,6 @@ function Roles({ roles }) {
   return badgeList;
 }
 
-export { Roles };
+export { Roles, roles };
 
 export default Roles;

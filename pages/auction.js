@@ -92,7 +92,7 @@ export default function Auction() {
 
               <section id="team-form" className="mt-5">
                 <h3>
-                  <i className="fas fa-trash"></i> Rimuovi Calciatore
+                  <i className="fas fa-exclamation-triangle"></i> Rimuovi / Svincola Calciatore
                 </h3>
 
                 <hr className="mt-2"></hr>
